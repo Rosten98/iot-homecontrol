@@ -8,7 +8,7 @@
 
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Divider, Switch, Text } from 'react-native-paper';
+import { Switch, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Entypo'
 import socketIOClient from 'socket.io-client';
 
@@ -19,6 +19,8 @@ const App: () => React$Node = () => {
   const [isSwitchOn1, setIsSwitchOn1] = React.useState(false);
   const [isSwitchOn2, setIsSwitchOn2] = React.useState(false);
   const [isSwitchOn3, setIsSwitchOn3] = React.useState(false);
+  const [temp, setTemp] = React.useState(0);
+  const [hum, setHum] = React.useState(0);
 
   const onToggleSwitch = () => {
     socket.emit("turnled", {turn: !isSwitchOn, led: 1})
@@ -39,6 +41,12 @@ const App: () => React$Node = () => {
     socket.emit("turnled", {turn: !isSwitchOn3, led: 4})
     setIsSwitchOn3(!isSwitchOn3);
   }
+
+  socket.on("rn_sensor_change", data => {
+    console.log(data);
+    setTemp(data.temp);
+    setHum(data.hum);
+  })
 
   useEffect(() => {
     console.log("Use effect")
@@ -87,13 +95,13 @@ const App: () => React$Node = () => {
       <View style={style.box}>
         <Text>Temperatura</Text>
         <View style={[style.row, style.temp]}>
-          <Icon name="thermometer" size={26} color="#777"/>
-          <Text>30° C</Text>
+          <Icon name="thermometer" size={26} color="#777" style={{marginRight: 10}}/>
+          <Text style={{marginLeft: 10, fontSize: 22}}>{temp}° C</Text>
         </View>
         <Text>Humedad</Text>
         <View style={[style.row, style.temp]}>
-          <Icon name="water" size={26} color="#777"/>
-          <Text>36%</Text>
+          <Icon name="water" size={26} color="#777" style={{marginRight: 10}}/>
+          <Text style={{marginLeft: 10, fontSize: 22}}>{hum}%</Text>
         </View>
       </View>
     </View>  
